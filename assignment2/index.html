@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <title>D3 Chapter 7</title>
+      <script type="text/javascript" src="../d3/d3.js"></script>
+      <style type="text/css">
+        div.bar {
+          display: inline-block;
+          width: 20px;
+          height: 75px;   /* We'll override height later */
+          background-color: teal;
+          margin-right: 2px;
+
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+        
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+      </style>
+  </head>
+  <body>
+    <h2>Assignment 2A: Simple SVG stuff</h2>
+    <p>Here we are looking at a svg element, containing individual handmade rects with different positions, and an decreasing opacity from left to right.</p>
+    <div id="viz1">
+      <svg width="280" height="140">
+            <rect x="0" y="60" width="80" height="80" fill="purple" fill-opacity="1" stroke="gray" stroke-width="2"/> 
+            <rect x="50" y="45" width="80" height="80" fill="blue" fill-opacity="0.8" stroke="gray" stroke-width="2"/>
+            <rect x="100" y="30" width="80" height="80" fill="green" fill-opacity="0.6" stroke="gray" stroke-width="2"/>
+            <rect x="150" y="15" width="80" height="80" fill="yellow" fill-opacity="0.4" stroke="gray" stroke-width="2"/>
+            <rect x="200" y="0" width="80" height="80" fill="red" fill-opacity="0.2" stroke="gray" stroke-width="2"/>
+        </svg>
+    </div>
+    <h2>Assignment 2B: One scatter plot and two datasets</h2>
+    <p>This visualization show the different districts in SF represented by each dot. The size of the dot represents the overall amount of crimes. The x-axis shows the amount to prostitution, and the y-axis show the amount of vehicle thefts.</p>
+    <p id="viz2p">Click here to shift between 2015 and 2003.</p>
+    <div id="viz2"></div>
+    <h2>Assignment 2C: One barchart and (at least) two datasets</h2>
+    <p>This visualization shows the different crimes with each bar, and thoe whole graph shows a year. The height of each bar is how much of that crime has been made and the color helps differentiate also.</p>
+    <p id="viz3p">Click here to shift between different years.</p>
+    <div id="viz3"></div>
+    <h2>Assignment 2D: Visualizing geodata</h2>
+    <p>This has not been made.</p>
+    <div id="viz4"></div>
+
+      <script type="text/javascript">
+        
+        //VIZ 2 ************************************************
+        var dataset2015;
+      var dataset2003;
+      var dataset;
+      var xScaleArray;
+      var yScaleArray;
+      d3.csv("data.csv", function(data2015) {
+        console.log(data2015);
+        dataset2015 = data2015; 
+        d3.csv("data2003.csv", function(data2003) {
+        dataset2003 = data2003;
+        dataset = dataset2003;
+        //Width and height
+        var w = 1000;
+        var h = 600;
+        var padding = 100;
+
+        //Create scale functions
+        var xScale = d3.scale.linear()
+                   .domain([0, 1000])
+                   .range([padding, w - padding * 2]);
+        var yScale = d3.scale.linear()
+                   .domain([0, 2500])
+                   .range([h - padding, padding]);
+        //Define X axis
+        var xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .orient("bottom")
+                  .ticks(5);
+        //Define Y axis
+        var yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient("left")
+                  .ticks(5);
+
+        //Create SVG element
+        var svg = d3.select("#viz2")
+              .append("svg")
+              .attr("width", w)
+              .attr("height", h);
+        //Create circles
+        svg.selectAll("circle")
+           .data(dataset)
+           .enter()
+           .append("circle")
+           .attr("cx", function(d) {
+              return xScale(d["prostitution"]);
+           })
+           .attr("cy", function(d) {
+              return yScale(d["vehthe"]);
+           })
+           .attr("r", function(d) {
+              return d["crimes"]/1000
+           });
+
+           svg.selectAll("text")
+                .data(dataset)
+                .enter()
+                .append("text")
+                .text(function(d) {
+                     return d["district"];
+                })
+                .attr("x", function(d) {
+                     return xScale(d["prostitution"]);
+                })
+                .attr("y", function(d) {
+                     return yScale(d["vehthe"]);
+                })
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "11px")
+                .attr("fill", "red");
+
+           //Create X axis
+          svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(0," + (h - padding) + ")")
+            .call(xAxis);
+          
+          //Create Y axis
+          svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(" + padding + ",0)")
+            .call(yAxis);
+
+          //On click, update with new data      
+           d3.select("#viz2p")
+             .on("click", function() {
+               
+              if (dataset == dataset2015) {
+                dataset = dataset2003;
+              } else {
+                dataset = dataset2015;
+              }
+               
+               //Update scale domains
+               xScale.domain([0, 1000]);
+               yScale.domain([0, 2500]);
+
+                var xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .orient("bottom")
+                  .ticks(5);
+                //Define Y axis
+                var yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient("left")
+                  .ticks(5);
+               //Update all circles
+               svg.selectAll("circle")
+                  .data(dataset)
+                  .transition()
+                    .duration(1000)
+                  .attr("cx", function(d) {
+                     return xScale(d["prostitution"]);
+                  })
+                  .attr("cy", function(d) {
+                     return yScale(d["vehthe"]);
+                  })
+                  .attr("r", function(d) {
+                      return d["crimes"]/1000
+                   });
+              svg.selectAll("text")
+                .data(dataset)
+                .transition()
+                .duration(1000)
+                .attr("x", function(d) {
+                     return xScale(d["prostitution"]);
+                })
+                .attr("y", function(d) {
+                     return yScale(d["vehthe"]);
+                });
+        });
+
+        }); 
+
+      }); 
+
+// VIZ 3 ************************************************
+        
+
+var data;
+      var dataset;
+      var detailData = [];
+      var detailDataNames = [];
+      var index = 0;
+      d3.csv("yearCrimes.csv", function(dataIn) {
+        console.log(dataIn);
+        data = dataIn;
+        dataset = data[0]
+        detailData = []
+        detailDataNames = []
+        for (var key in dataset) {
+          if (key != "year" && key != "ASSAULT") {
+            detailDataNames.push(key);
+            detailData.push(parseInt(dataset[key]));
+          }
+        }
+        console.log(detailData);
+        console.log(detailDataNames);
+
+
+        //Width and height
+      var w = 600;
+      var h = 250;
+      var padding = 0;
+      
+      var xScale = d3.scale.ordinal()
+              .domain(d3.range(detailData.length))
+              .rangeRoundBands([0, w], 0.05);
+      var yScale = d3.scale.linear()
+              .domain([0, d3.max(detailData)])
+              .range([0, h]);
+
+     var xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .orient("bottom")
+                  .ticks(5);  //Set rough # of ticks
+      //Define Y axis
+var yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient("left")
+                  .ticks(5);
+
+      console.log(d3.max(detailData));
+      //Create SVG element
+      var svg = d3.select("#viz3")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+      //Create bars
+      svg.selectAll("rect")
+         .data(detailData)
+         .enter()
+         .append("rect")
+         .attr("x", function(d, i) {
+            return xScale(i);
+         })
+         .attr("y", function(d) {
+            return h - yScale(d);
+         })
+         .attr("width", xScale.rangeBand())
+         .attr("height", function(d) {
+            return yScale(d);
+         })
+         .attr("fill", function(d) {
+          return "rgb(0, 0, " + (d / 50) + ")";
+         });
+      //Create labels
+      svg.selectAll("text")
+         .data(detailData)
+         .enter()
+         .append("text")
+         .text(function(d) {
+            return d;
+         })
+         .attr("text-anchor", "middle")
+         .attr("x", function(d, i) {
+            return xScale(i) + xScale.rangeBand() / 2;
+         })
+         .attr("y", function(d) {
+            return h - yScale(d) + 14;
+         })
+         .attr("font-family", "sans-serif")
+         .attr("font-size", "11px")
+         .attr("fill", "white");
+
+        svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0," + (h - padding) + ")")
+    .call(xAxis);
+
+    //Create Y axis
+svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(" + padding + ",0)")
+    .call(yAxis);
+
+         //On click, update with new data     
+      d3.select("#viz3p")
+        .on("click", function() {
+          //New values for dataset
+          index++;
+          if (index >= dataIn.length) {
+            index = 0;
+          }
+          
+          dataset = data[index]
+        detailData = []
+        detailDataNames = []
+        for (var key in dataset) {
+          if (key != "year" && key != "ASSAULT") {
+            detailDataNames.push(key);
+            detailData.push(parseInt(dataset[key]));
+          }
+        }
+
+          //Update scale domain
+          //Recalibrate the scale domain, given the new max value in dataset
+          yScale.domain([0, d3.max(detailData)]);
+          //Update all rects
+          svg.selectAll("rect")
+             .data(detailData)
+             .transition()
+             .delay(function(d, i) {
+               return i / detailData.length * 1000;
+             })
+             .duration(500)
+             .attr("y", function(d) {
+                return h - yScale(d);
+             })
+             .attr("height", function(d) {
+                return yScale(d);
+             })
+             .attr("fill", function(d) {
+              return "rgb(0, 0, " + (d / 50) + ")";
+             });
+          //Update all labels
+          svg.selectAll("text")
+             .data(detailData)
+             .transition()
+             .delay(function(d, i) {
+               return i / detailData.length * 1000;
+             })
+             .duration(500)
+             .text(function(d) {
+                return d;
+             })
+             .attr("x", function(d, i) {
+                return xScale(i) + xScale.rangeBand() / 2;
+             })
+             .attr("y", function(d) {
+                return h - yScale(d) + 14;
+             });
+
+
+
+      });
+});
+
+
+
+      </script>
+  </body>
+</html>
