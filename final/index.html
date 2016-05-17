@@ -34,10 +34,9 @@
 
   <h1>Social Data</h1>
   <h2>Introduction</h2>
-  <p>In order for this project to become a reality, we have lended data from the mobile and online app 'Fartkontrol.nu'.</p>
-  <p>We have received six months of data from the application that shows where users have registered a police speed trap, when and the amount of conirmations from other users.</p>
+  <p>This project seeks to investigate the patterns which are created by the police setting up speed traps. In order for this project to become a reality, we have lended data from the mobile and online app 'Fartkontrol.nu'. We have received six months of data from the application that shows where users have registered a police speed trap, when and the amount of conirmations from other users.</p>
   <h3>Heatmap of the activity</h3>
-  <p>The first visualization is a heatmap that shows the collected activity within these six months.</p>
+  <p>The first thing to investigate is the extent of the speed traps. The below visualization shows where the police has been active in the last six months</p>
   <div id="map" style="width: 600px; height: 400px"></div>
      <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
     <script src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
@@ -73,7 +72,7 @@
 
   </script>
   <h3>Pie chart of distribution </h3>
-  <p>This chart show the distribution of police activity over the weekdays</p>
+  <p>Knowing where they are enables a driver to be cautious around the area. Though it would be nice to know the extent of the speed traps and perhaps look into when there is a higher possibility of them being there. The next visualization shows collectively on which weekday the police is active.</p>
   <div id="pie"></div>
   <script>
 
@@ -127,7 +126,7 @@
 
 </script>
 <h3>Decision tree machine learning</h3>
-<p>This section shows the probability on a specific weekday in a specific municipality if there is a police speed trap.</p>
+<p>Though the previous data visualization was giving a lot of information, there is a need to further investigate specific municipalities. The following visualization allows you to choose a municipality and display the probability of the police having active speed traps.</p>
 <select id="selhist">
     <option value=1052>København K 1052</option>
     <option value=1057>København K 1057</option>
@@ -551,7 +550,7 @@
              })
              .duration(500)
              .text(function(d) {
-                return d.substring(0,4) * 100 + "%";
+                return d.substring(0,3) * 100 + "%";
              })
              .attr("x", function(d, i) {
                 return xScale(i) + xScale.rangeBand() / 2;
