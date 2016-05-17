@@ -443,7 +443,7 @@
          .enter()
          .append("text")
          .text(function(d) {
-            return d * 100 + "%";
+            return d.substring(0,4) * 100 + "%";
          })
          .attr("text-anchor", "middle")
          .attr("x", function(d, i) {
@@ -551,7 +551,7 @@
              })
              .duration(500)
              .text(function(d) {
-                return d * 100 + "%";
+                return d.substring(0,4) * 100 + "%";
              })
              .attr("x", function(d, i) {
                 return xScale(i) + xScale.rangeBand() / 2;
