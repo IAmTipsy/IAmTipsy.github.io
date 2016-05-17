@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <title>Final Assignment</title>
+      <script type="text/javascript" src="../d3/d3.js"></script>
+      <link 
+        rel="stylesheet" 
+        href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"
+    />
+      <style type="text/css">
+        div.bar {
+          display: inline-block;
+          width: 20px;
+          height: 75px;   /* We'll override height later */
+          background-color: teal;
+          margin-right: 2px;
+
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+        
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+      </style>
+  </head>
+  <body>
+
+  <h1>Social Data</h1>
+  <h2>Introduction</h2>
+  <p>In order for this project to become a reality, we have lended data from the mobile and online app 'Fartkontrol.nu'.</p>
+  <p>We have received six months of data from the application that shows where users have registered a police speed trap, when and the amount of conirmations from other users.</p>
+  <h3>Heatmap of the activity</h3>
+  <p>The first visualization is a heatmap that shows the collected activity within these six months.</p>
+  <div id="map" style="width: 600px; height: 400px"></div>
+     <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+    <script src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+    <script>
+      
+      var heatmapData = [];
+        d3.csv("Fartkontroller_sjaelland_6mdr.csv", function(dataIn) {
+            //console.log(dataIn[0]["x"]);
+            var dataset = dataIn;
+            for (var key in dataset) {
+                var x = dataset[key]["x"];
+                var y = dataset[key]["y"];
+                var size = dataset[key]["Bekræftelser"];
+                heatmapData.push([x,y,size]);
+         }
+
+         var map = L.map('map').setView([55.747678,12.3772], 10);
+        mapLink = 
+            '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+        L.tileLayer(
+            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; ' + mapLink + ' Contributors',
+            maxZoom: 18,
+        }).addTo(map);
+
+        var heat = L.heatLayer(heatmapData,{
+            radius: 10,
+            blur: 10, 
+            maxZoom: 17,
+        }).addTo(map);
+
+        })
+
+  </script>
+  </body>
+</html>
